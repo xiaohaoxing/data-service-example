@@ -49,7 +49,7 @@ type TopPriceByYearData = ResponseData<{ price: string; name: string; }>;
 // prettier-ignore
 type OrderByBrandYearData = ResponseData<{ name: string; order_count: string; }>;
 
-type PriceByYearAndFuel = ResponseData<{ price: string; name: string; }>;
+type PriceByYearAndFuel = ResponseData<{ price: string; name: string }>;
 
 function RankList({
   data,
@@ -90,7 +90,7 @@ function RankList({
 
 export default function Home() {
   const [year, setYear] = useState("2017");
-  const [fuel, setFuel] = useState("Diesel")
+  const [fuel, setFuel] = useState("Diesel");
   const { data: orderByYearData } = useSWR(
     `/api/gateway/total_order_per_year`,
     fetcher as Fetcher<OrderByYearData, string>
@@ -111,7 +111,6 @@ export default function Home() {
     `/api/gateway/price_by_year_and_fuel?year=${year}&fuel=${fuel}`,
     fetcher as Fetcher<PriceByYearAndFuel, string>
   );
-  
 
   const options = {
     responsive: true,
@@ -127,7 +126,7 @@ export default function Home() {
   };
 
   const labels = orderByYearData?.data.rows.map((i) => i.year);
-  const fuelLabels = ["LPG","Petrol","Electric","Diesel","CNG"]
+  const fuelLabels = ["LPG", "Petrol", "Electric", "Diesel", "CNG"];
   const datasets = [
     {
       data: orderByYearData?.data.rows.map((i) => Number(i.order_count)),
@@ -147,7 +146,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col max-w-[780px] min-h-screen mx-auto gap-4 pt-8">
-      <header className="text-center font-bold text-xl">
+      <header className="text-center font-bold text-xl max-w-[780px]">
         Insights into Automotive Sales
       </header>
       <div className="shadow-xl bg-white rounded p-4 w-full ">
@@ -217,11 +216,12 @@ export default function Home() {
           />
         </div>
         
+        
+      </div>
 
-        <div className="shadow-xl bg-white rounded p-4 flex-1 flex-shrink-0 md:w-[49%]">
+      <div className="shadow-xl bg-white rounded p-4 flex-1 flex-shrink-0 md:w-[49%]">
           <header className="flex justify-between">
-            <div className="font-bold"></div>
-
+            <div className="font-bold">Top Price</div>
             <div className="text-xs flex items-center">
               <span className="font-bold mr-1">Year:</span>
               <select value={year} onChange={(e) => setYear(e.target.value)}>
@@ -256,8 +256,7 @@ export default function Home() {
             }
           />
         </div>
-      </div>
-
+        
       <footer className="flex items-center justify-center mt-4">
         <a
           className="flex gap-2"
