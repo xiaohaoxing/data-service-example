@@ -7,7 +7,20 @@
     "data_source": {
       "cluster_id": 1379661944646257220
     },
-    "params": [],
+    "params": [
+      {
+        "name": "year",
+        "type": "string",
+        "required": 1,
+        "default": ""
+      },
+      {
+        "name": "fuel",
+        "type": "string",
+        "required": 1,
+        "default": ""
+      }
+    ],
     "settings": {
       "timeout": 5000,
       "row_limit": 50
