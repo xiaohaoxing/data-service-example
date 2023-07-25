@@ -49,6 +49,8 @@ type TopPriceByYearData = ResponseData<{ price: string; name: string; }>;
 // prettier-ignore
 type OrderByBrandYearData = ResponseData<{ name: string; order_count: string; }>;
 
+type PriceByYearAndFuel = ResponseData<{ price: string; name: string; }>;
+
 function RankList({
   data,
   bg,
@@ -88,6 +90,7 @@ function RankList({
 
 export default function Home() {
   const [year, setYear] = useState("2017");
+  const [fuel, setFuel] = useState("Diesel")
   const { data: orderByYearData } = useSWR(
     `/api/gateway/total_order_per_year`,
     fetcher as Fetcher<OrderByYearData, string>
@@ -104,6 +107,11 @@ export default function Home() {
     `/api/gateway/price_by_brand_year?year=${year}`,
     fetcher as Fetcher<TopPriceByYearData, string>
   );
+  const { data: priceByYearAndFuel } = useSWR(
+    `/api/gateway/price_by_year_and_fuel?year=${year}&fuel=${fuel}`,
+    fetcher as Fetcher<PriceByYearAndFuel, string>
+  );
+  
 
   const options = {
     responsive: true,
@@ -119,6 +127,7 @@ export default function Home() {
   };
 
   const labels = orderByYearData?.data.rows.map((i) => i.year);
+  const fuelLabels = ["LPG","Petrol","Electric","Diesel","CNG"]
   const datasets = [
     {
       data: orderByYearData?.data.rows.map((i) => Number(i.order_count)),
@@ -201,6 +210,46 @@ export default function Home() {
             bg="bg-orange-50"
             data={
               topPriceByYearData?.data.rows.slice(0, 10).map((i) => ({
+                name: i.name,
+                value: Number(i.price),
+              })) ?? []
+            }
+          />
+        </div>
+        
+
+        <div className="shadow-xl bg-white rounded p-4 flex-1 flex-shrink-0 md:w-[49%]">
+          <header className="flex justify-between">
+            <div className="font-bold"></div>
+
+            <div className="text-xs flex items-center">
+              <span className="font-bold mr-1">Year:</span>
+              <select value={year} onChange={(e) => setYear(e.target.value)}>
+                {labels?.map((i) => (
+                  <option key={i} value={i}>
+                    {i}
+                  </option>
+                ))}
+              </select>
+              <span className="font-bold mr-1">Fuel:</span>
+              <select value={fuel} onChange={(e) => setFuel(e.target.value)}>
+                {fuelLabels?.map((i) => (
+                  <option key={i} value={i}>
+                    {i}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </header>
+
+          <div className="flex justify-between mt-3 mb-2 text-xs font-bold text-gray-500">
+            <div>Name</div>
+            <div>Price</div>
+          </div>
+          <RankList
+            bg="bg-orange-50"
+            data={
+              priceByYearAndFuel?.data.rows.slice(0, 10).map((i) => ({
                 name: i.name,
                 value: Number(i.price),
               })) ?? []

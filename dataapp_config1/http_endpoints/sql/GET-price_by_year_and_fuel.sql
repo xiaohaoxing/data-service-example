@@ -1,7 +1,7 @@
 use sample_data;
 
 SELECT
-  selling_price
+  sold_car_orders
 FROM
   `sold_car_orders`
 WHERE
